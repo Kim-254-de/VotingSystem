@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Voter | VotingApp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #16a34a;
+            color: #fff;
+            padding: 24px 0 16px 0;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+        }
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 32px 24px 24px 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #16a34a;
+        }
+        .voter-info {
+            margin-bottom: 28px;
+            font-size: 1.08rem;
+        }
+        .voter-info p {
+            margin: 10px 0;
+            color: #222;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            background: #15803d;
+            box-shadow: 0 4px 16px rgba(22,163,74,0.13);
+        }
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+        .back-home:hover, .back-home:focus { color: #0e7c34; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        VotingApp
+    </div>
+    <div class="container">
+        <h2>Verify Voter</h2>
+        <div class="voter-info">
+            <p><strong>Name:</strong> {{ voter.name }}</p>
+            <p><strong>National ID:</strong> {{ voter.national_id }}</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Verify</button>
+        </form>
+        <a href="{% url 'Evoting:voter_list' %}" class="back-home">← Back to Voter List</a>
+    </div>
+</body>
+</html>

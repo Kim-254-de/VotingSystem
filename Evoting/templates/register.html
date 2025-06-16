@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Voter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #16a34a;
+            color: #fff;
+            padding: 24px 0 16px 0;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header span {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-left: 32px;
+        }
+        .header nav {
+            margin-right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 18px;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        .header nav a:last-child {
+            margin-right: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 32px 24px 24px 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #16a34a;
+        }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; color: #222; }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background: #0e7c34; }
+        .messages {
+            margin-bottom: 16px;
+            color: #d32f2f;
+            text-align: center;
+        }
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .back-home:hover, .back-home:focus { color: #0e7c34; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span>VotingApp</span>
+        <nav style="flex: 1; display: flex; justify-content: center; align-items: center;">
+            <a href="{% url 'Evoting:index' %}">Home</a>
+            <a href="{% url 'Evoting:voter_list' %}">Voter List</a>
+            <a href="{% url 'Evoting:results' %}">Results</a>
+        </nav>
+    </div>
+    <div class="container">
+        <h2>Register Voter</h2>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_national_id">National ID</label>
+                {{ form.national_id }}
+            </div>
+            <div class="form-group">
+                <label for="id_name">Name</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                <label for="id_date_of_birth">Date of Birth</label>
+                {{ form.date_of_birth }}
+            </div>
+            <div class="form-group">
+                <label for="id_age">Age</label>
+                {{ form.age }}
+            </div>
+            <div class="form-group">
+                <label for="id_constituency">Constituency</label>
+                {{ form.constituency }}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ form.email }}
+            </div>
+            
+            {% if form.errors %}
+    <div class="messages">
+        {{ form.errors }}
+    </div>
+{% endif %}
+            <button type="submit">Register</button>
+        </form>
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dobInput = document.getElementById('id_date_of_birth');
+    const ageInput = document.getElementById('id_age');
+    if (dobInput && ageInput) {
+        dobInput.addEventListener('change', function() {
+            const dob = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            ageInput.value = age > 0 ? age : '';
+        });
+    }
+});
+</script>
+</body>
+</html>

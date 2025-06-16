@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Login | VotingApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #16a34a;
+            color: #fff;
+            padding: 32px 0 20px 0;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 36px;
+            box-shadow: 0 2px 12px rgba(22,163,74,0.10);
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 48px auto;
+            background: #fff;
+            padding: 36px 32px 28px 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 32px rgba(22,163,74,0.10), 0 1.5px 8px rgba(34,211,238,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 28px;
+            color: #16a34a;
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .errorlist {
+            color: #d32f2f;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        form {
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        label {
+            margin-bottom: 7px;
+            color: #222;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            background: #f9f9f9;
+            font-size: 1rem;
+            transition: border 0.2s;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border: 1.5px solid #16a34a;
+            outline: none;
+            background: #f6fff8;
+        }
+        .password-toggle {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 0.97rem;
+            gap: 6px;
+        }
+        .password-toggle label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+            color: #444;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            background: #15803d;
+            box-shadow: 0 4px 16px rgba(22,163,74,0.13);
+        }
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+        .back-home:hover, .back-home:focus { color: #0e7c34; }
+        @media (max-width: 500px) {
+            .container { max-width: 98vw; padding: 18px 4vw 18px 4vw; }
+            .header { font-size: 1.3rem; padding: 18px 0 12px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        VotingApp
+    </div>
+    <div class="container">
+        <h2>Staff Login</h2>
+        {% if form.errors %}
+            <div class="errorlist">
+                Please enter the correct username and password.
+            </div>
+        {% endif %}
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+                <div class="password-toggle">
+                    <input type="checkbox" id="show-password" onclick="togglePassword()">
+                    <label for="show-password">Show password</label>
+                </div>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <a href="{% url 'Evoting:index' %}" class="back-home">← Back to Home</a>
+    </div>
+    <script>
+        function togglePassword() {
+            var pwd = document.getElementById('id_password');
+            var cb = document.getElementById('show-password');
+            if (pwd && cb) {
+                pwd.type = cb.checked ? 'text' : 'password';
+            }
+        }
+    </script>
+</body>
+</html>

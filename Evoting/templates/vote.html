@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote | VotingApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #16a34a;
+            color: #fff;
+            padding: 24px 0 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+        }
+        .header span {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-left: 32px;
+        }
+        .header nav {
+            margin-top: 0;
+            margin-right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 18px;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: text-decoration 0.2s;
+        }
+        .header nav a:last-child {
+            margin-right: 0;
+        }
+        .header nav a:hover {
+            text-decoration: underline;
+        }
+        .main-layout {
+            display: flex;
+            min-height: 90vh;
+        }
+        .sidebar {
+            width: 280px;
+            background: #f4f8fb;
+            border-right: 1px solid #e0e0e0;
+            padding: 24px 12px;
+            overflow-y: auto;
+        }
+        .sidebar h3 {
+            color: #16a34a;
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .search-bar {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-bar input[type="text"] {
+            width: 85%;
+            padding: 7px 10px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .voter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .voter-list li {
+            padding: 8px 6px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.98rem;
+        }
+        .voter-list li:last-child {
+            border-bottom: none;
+        }
+        .voter-list .voted {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .content {
+            flex: 1;
+            padding: 36px 32px;
+        }
+        .content h2 {
+            color: #16a34a;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #222;
+            font-weight: 500;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            background: #15803d;
+            box-shadow: 0 4px 16px rgba(22,163,74,0.13);
+        }
+        .message {
+            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .message.success {
+            background: #e6f9ed;
+            color: #15803d;
+            border: 1px solid #b6e7c9;
+        }
+        .message.error {
+            background: #ffeaea;
+            color: #d32f2f;
+            border: 1px solid #ffbdbd;
+        }
+        @media (max-width: 900px) {
+            .main-layout { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e0e0e0; }
+            .content { padding: 24px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span>VotingApp</span>
+        <nav style="flex: 1; display: flex; justify-content: center; align-items: center;">
+            <a href="{% url 'Evoting:index' %}">Home</a>
+            <a href="{% url 'Evoting:results' %}">Results</a>
+        </nav>
+    </div>
+    <div class="main-layout">
+        <div class="sidebar">
+            <h3>Registered Voters</h3>
+            <div class="search-bar">
+                <input type="text" id="voterSearch" placeholder="Search voter by name or ID...">
+            </div>
+            <ul class="voter-list" id="voterList">
+                {% for voter in voters %}
+                    <li>
+                        <strong>{{ voter.name }}</strong><br>
+                        <span style="font-size:0.93em;color:#555;">ID: {{ voter.national_id }}</span>
+                        {% if voter.has_voted %}
+                            <span class="voted">✔</span>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li>No voters registered.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="content">
+            <h2>Cast Your Vote</h2>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="national_id">Enter National ID:</label>
+                    <input type="text" name="national_id" id="national_id" required>
+                </div>
+                {% for position, candidates in candidates_by_position.items %}
+                    <div class="form-group">
+                        <label>{{ position }}</label>
+                        <select name="candidate_{{ position }}">
+                            <option value="">-- Select Candidate --</option>
+                            {% for candidate in candidates %}
+                                <option value="{{ candidate.id }}">{{ candidate.name }} ({{ candidate.party }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+                <button type="submit">Submit Vote</button>
+            </form>
+            {% if already_voted %}
+                <div class="message error" style="margin-top:12px;">You have already voted.</div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        // Simple client-side search for the voter list
+        document.getElementById('voterSearch').addEventListener('input', function() {
+            var filter = this.value.toLowerCase();
+            var voters = document.querySelectorAll('#voterList li');
+            voters.forEach(function(li) {
+                var text = li.textContent.toLowerCase();
+                li.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
