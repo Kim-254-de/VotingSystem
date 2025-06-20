@@ -8,7 +8,9 @@ class VoterAdmin(admin.ModelAdmin):
 admin.site.register(Voter, VoterAdmin)
 
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'position', 'party', 'votes', 'voters_list')
+
+    list_display = ('name', 'position', 'party', 'votes', 'voters_list', 'is_faculty_representative', 'faculty')
+    list_filter = ('position', 'party', 'is_faculty_representative', 'faculty')
 
     def voters_list(self, obj):
         voters = obj.vote_set.select_related('voter').all()

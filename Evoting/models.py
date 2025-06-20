@@ -3,7 +3,14 @@ from django.conf import settings
 from datetime import date
 
 # Create your models here.
-
+FACULTY_CHOICES = [
+    ('Engineering', 'Engineering'),
+    ('Arts', 'Arts'),
+    ('Science', 'Science'),
+    ('Commerce', 'Commerce'),
+    ('Law', 'Law'),
+    ('Medicine', 'Medicine'),
+]
 class Voter(models.Model):
     national_id = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
@@ -25,6 +32,9 @@ class Voter(models.Model):
     )
     voted_at = models.DateTimeField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+    faculty = models.CharField(
+        max_length=50, choices=FACULTY_CHOICES, null=True, blank=True
+    )  # New field for faculty
     
 
     def __str__(self):
@@ -43,6 +53,11 @@ class Candidate(models.Model):
     party = models.CharField(max_length=100, default='')  # Party the candidate represents
     position = models.CharField(max_length=100, default='')  # Position the candidate is vying for
     votes = models.PositiveIntegerField(default=0)
+    is_faculty_representative = models.BooleanField(default=True)  # New field for faculty representative
+    # Filter for general candidates
+    faculty = models.CharField(
+        max_length=50, choices=FACULTY_CHOICES, null=True, blank=True
+    )  # New field for faculty
 
     def __str__(self):
         return f"{self.name} ({self.party}) - {self.position}"

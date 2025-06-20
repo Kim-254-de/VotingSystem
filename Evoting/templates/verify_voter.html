@@ -87,6 +87,7 @@
             {% csrf_token %}
             <button type="submit">Verify</button>
         </form>
+        <a href="{% url 'Evoting:generate_pdf' voter.id %}" class="back-home">Download Voter Card</a>
         <a href="{% url 'Evoting:voter_list' %}" class="back-home">← Back to Voter List</a>
     </div>
 </body>

@@ -10,6 +10,12 @@ from django.utils import timezone
 from django.core.mail import send_mail
 import logging
 from django_ratelimit.decorators import ratelimit
+from xhtml2pdf import pisa
+from django.template.loader import get_template
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from django.core.mail import EmailMessage
+
 
 audit_logger = logging.getLogger('audit')
 
@@ -73,6 +79,15 @@ def verify_voter(request, voter_id):
 @group_required('VotingClerks')
 @ratelimit(key='ip', rate='5/m', block=True)
 def vote(request):
+    voter = None
+    candidates_by_position = {}
+    already_voted = False
+
+    national_id = request.GET.get('national_id')
+
+
+    
+
     positions = Candidate.objects.values_list('position', flat=True).distinct()
     candidates_by_position = {}
     for position in positions:
@@ -164,3 +179,75 @@ def voter_list(request):
 def staff_dashboard(request):
     # You can add more context as needed
     return render(request, 'staff_dashboard.html')
+
+
+
+def generate_pdf(request, voter_id):
+    voter = get_object_or_404(Voter, id=voter_id)
+    template = get_template('voter_card.html')
+    html = template.render({'voter': voter})
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="voter_{voter.national_id}.pdf"'
+
+    pisa_status = pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF', status=500)
+    return response
+
+
+# This one is used to generate a PDF buffer for email
+def generate_pdf_buffer(voter):
+    template = get_template('voter_card.html')  # Use same template as generate_pdf
+    html = template.render({'voter': voter})
+    result = BytesIO()
+    pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=result)
+    result.seek(0)
+    return result
+
+
+def send_card_by_email(request, voter_id): 
+    voter = get_object_or_404(Voter, id=voter_id)
+
+    if not voter.email:
+        messages.error(request, "Voter does not have an email address.")
+        return redirect('Evoting:voter_list')
+
+    subject = 'Your Voter Card'
+    message = get_template('voter_card.html').render({'voter': voter})
+
+    email = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email='kimeddy254@gmail.com',
+        to=[voter.email],
+    )
+    email.content_subtype = 'html'
+
+    # ✅ Generate and attach PDF
+    pdf_buffer = generate_pdf_buffer(voter)
+    if pdf_buffer:
+        pdf_buffer.seek(0)
+        email.attach(
+            f'voter_{voter.national_id}.pdf',
+            pdf_buffer.read(),
+            'application/pdf'
+        )
+    else:
+        messages.error(request, "PDF generation failed.")
+        return redirect('Evoting:voter_list')
+
+    try:
+        email.send(fail_silently=False)
+        messages.success(request, "Voter card sent successfully.")
+    except Exception as e:
+        messages.error(request, f"Failed to send voter card: {str(e)}")
+
+    return redirect('Evoting:voter_list')
+# Correct use inside a view or utility function
+from .models import Candidate
+
+def get_faculty_candidates():
+    return Candidate.objects.filter(is_faculty_representative=True)
+def get_general_candidates():
+    return Candidate.objects.filter(is_faculty_representative=False)
