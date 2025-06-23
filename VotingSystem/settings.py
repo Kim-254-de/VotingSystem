@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Evoting',
-    'django_extensions',  # Optional, for additional features like shell_plus
+    'django_extensions',  
 ]
 
 MIDDLEWARE = [

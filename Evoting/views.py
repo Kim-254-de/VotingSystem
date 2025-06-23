@@ -32,14 +32,14 @@ def register_voter(request):
             voter = form.save(commit=False)
             voter.registered_by = request.user
             voter.save()
-            # Log the voter registration
+            
             audit_logger.info(f"Voter registered: {voter.national_id} by {request.user.username}")
-            # Send email notification if email is provided
+            
             if voter.email:
                 send_mail(
                     'Voter Registration Successful',
                     f'Dear {voter.name},\n\nYou have been successfully registered as a voter in the VotingApp system.',
-                    'kimeddy254@gmail.com',  # Use the same as EMAIL_HOST_USER
+                    'kimeddy254@gmail.com',  
                     [voter.email],
                     fail_silently=True,
                 )
@@ -60,7 +60,7 @@ def verify_voter(request, voter_id):
         voter.verified_by = request.user
         voter.verified_at = timezone.now()
         voter.save()
-        # Send verification email
+        
         if voter.email:
             send_mail(
                 'Voter Verification Successful',
@@ -94,7 +94,7 @@ def vote(request):
         candidates_by_position[position] = Candidate.objects.filter(position=position)
 
     already_voted = False
-    voters = Voter.objects.all()  # Add this line
+    voters = Voter.objects.all()  
 
     if request.method == "POST":
         national_id = request.POST.get('national_id')
@@ -104,7 +104,7 @@ def vote(request):
                 messages.error(request, "You have already voted.")
                 already_voted = True
             else:
-                # Process a vote for each position
+                
                 for position in positions:
                     candidate_id = request.POST.get(f'candidate_{position}')
                     if candidate_id:
@@ -127,13 +127,13 @@ def vote(request):
     return render(request, "vote.html", {
         "candidates_by_position": candidates_by_position,
         "already_voted": already_voted,
-        "voters": voters,  # Pass voters to template
+        "voters": voters,  
     })
 
 
 @login_required
 def results(request):
-    # Get all unique positions
+    
     positions = Candidate.objects.values_list('position', flat=True).distinct()
     results_by_position = {}
     for position in positions:
@@ -154,7 +154,7 @@ def index(request):
 def candidates_by_position(request):
     presidents = Candidate.objects.filter(position='President')
     governors = Candidate.objects.filter(position='Governor')
-    # Add more positions as needed
+    
     return render(request, 'your_template.html', {
         'presidents': presidents,
         'governors': governors,
@@ -177,7 +177,7 @@ def voter_list(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def staff_dashboard(request):
-    # You can add more context as needed
+    
     return render(request, 'staff_dashboard.html')
 
 
@@ -196,9 +196,8 @@ def generate_pdf(request, voter_id):
     return response
 
 
-# This one is used to generate a PDF buffer for email
 def generate_pdf_buffer(voter):
-    template = get_template('voter_card.html')  # Use same template as generate_pdf
+    template = get_template('voter_card.html')  
     html = template.render({'voter': voter})
     result = BytesIO()
     pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=result)
@@ -224,7 +223,7 @@ def send_card_by_email(request, voter_id):
     )
     email.content_subtype = 'html'
 
-    # ✅ Generate and attach PDF
+    
     pdf_buffer = generate_pdf_buffer(voter)
     if pdf_buffer:
         pdf_buffer.seek(0)
@@ -244,8 +243,6 @@ def send_card_by_email(request, voter_id):
         messages.error(request, f"Failed to send voter card: {str(e)}")
 
     return redirect('Evoting:voter_list')
-# Correct use inside a view or utility function
-from .models import Candidate
 
 def get_faculty_candidates():
     return Candidate.objects.filter(is_faculty_representative=True)
