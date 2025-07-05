@@ -7,12 +7,10 @@ from .forms import VoterRegistrationForm, VoterVerificationForm
 from django.db.models import Q
 from .decorators import group_required
 from django.utils import timezone
-from django.core.mail import send_mail
 import logging
 from django_ratelimit.decorators import ratelimit
 from xhtml2pdf import pisa
 from django.template.loader import get_template
-from reportlab.pdfgen import canvas
 from io import BytesIO
 from django.core.mail import EmailMessage
 
@@ -51,8 +49,8 @@ def register_voter(request):
 
 
 @group_required('VoterRegistrars')
-def verify_voter(request, voter_id):
-    voter = get_object_or_404(Voter, id=voter_id)
+def verify_voter(request, national_id):
+    voter = get_object_or_404(Voter, id=national_id)
     if voter.registered_by != request.user:
         return HttpResponse("You are not authorized to verify this voter.", status=403)
     if request.method == 'POST':
@@ -151,18 +149,11 @@ def index(request):
     return render(request, 'index.html')
 
 
-def candidates_by_position(request):
-    presidents = Candidate.objects.filter(position='President')
-    governors = Candidate.objects.filter(position='Governor')
-    
-    return render(request, 'your_template.html', {
-        'presidents': presidents,
-        'governors': governors,
+
         
 
 
-    })
-
+    
 
 @login_required
 def voter_list(request):
@@ -182,8 +173,8 @@ def staff_dashboard(request):
 
 
 
-def generate_pdf(request, voter_id):
-    voter = get_object_or_404(Voter, id=voter_id)
+def generate_pdf(request, national_id):
+    voter = get_object_or_404(Voter, id=national_id)
     template = get_template('voter_card.html')
     html = template.render({'voter': voter})
 
@@ -199,14 +190,19 @@ def generate_pdf(request, voter_id):
 def generate_pdf_buffer(voter):
     template = get_template('voter_card.html')  
     html = template.render({'voter': voter})
-    result = BytesIO()
-    pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=result)
-    result.seek(0)
-    return result
 
+    buffer = BytesIO()
+    result = pisa.CreatePDF(src=html, dest=buffer)
 
-def send_card_by_email(request, voter_id): 
-    voter = get_object_or_404(Voter, id=voter_id)
+    if result.err:
+        print(" PDF generation failed.")
+        return None
+
+    buffer.seek(0)
+    return buffer
+
+def send_card_by_email(request, national_id): 
+    voter = get_object_or_404(Voter, id=national_id)
 
     if not voter.email:
         messages.error(request, "Voter does not have an email address.")
@@ -218,7 +214,7 @@ def send_card_by_email(request, voter_id):
     email = EmailMessage(
         subject=subject,
         body=message,
-        from_email='kimeddy254@gmail.com',
+        from_email=None,
         to=[voter.email],
     )
     email.content_subtype = 'html'
@@ -243,8 +239,3 @@ def send_card_by_email(request, voter_id):
         messages.error(request, f"Failed to send voter card: {str(e)}")
 
     return redirect('Evoting:voter_list')
-
-def get_faculty_candidates():
-    return Candidate.objects.filter(is_faculty_representative=True)
-def get_general_candidates():
-    return Candidate.objects.filter(is_faculty_representative=False)
