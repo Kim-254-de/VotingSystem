@@ -13,6 +13,7 @@ from xhtml2pdf import pisa
 from django.template.loader import get_template
 from io import BytesIO
 from django.core.mail import EmailMessage
+from django.core.mail import send_mail
 
 
 audit_logger = logging.getLogger('audit')
@@ -149,12 +150,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-
-        
-
-
-    
-
 @login_required
 def voter_list(request):
     query = request.GET.get('q', '')
@@ -211,7 +206,7 @@ def send_card_by_email(request, national_id):
     subject = 'Your Voter Card'
     message = get_template('voter_card.html').render({'voter': voter})
 
-    email = EmailMessage(
+    email = send_mail(
         subject=subject,
         body=message,
         from_email=None,
