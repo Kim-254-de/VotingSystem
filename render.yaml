@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: voting-system
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn VotingSystem.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: VotingSystem.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mysql-VotingSystem
+          property: connectionString
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEBUG
+        value: "False"
+
+databases:
+  - name: mysql-VotingSystem
+    databaseName: VotingSystem
+    user: Kimathi
+    ipAllowList: # Optional
+      - source: 0.0.0.0/0
+        description: Allow all IPs
+    databaseType: mysql
