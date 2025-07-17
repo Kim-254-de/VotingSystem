@@ -24,6 +24,5 @@ urlpatterns = [
     path('evoting/', include('Evoting.urls')),
     path('', views.home_view, name='home'),  # Home page as entry point
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('create-admin/', views.create_superuser, name='create_admin'),  # URL for creating superuser
-]
+   
 
