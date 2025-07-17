@@ -13,5 +13,5 @@ urlpatterns = [
     path('voters/', views.voter_list, name='voter_list'),
     path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('generate_pdf/<int:national_id>/', views.generate_pdf, name='generate_pdf'),
-    path('create admin/', views.create_superuser, name='create_admin'),
+    path('create_admin/', views.create_superuser, name='create_admin'),
 ]
