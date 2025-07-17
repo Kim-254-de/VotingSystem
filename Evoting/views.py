@@ -234,3 +234,15 @@ def send_card_by_email(request, national_id):
         messages.error(request, f"Failed to send voter card: {str(e)}")
 
     return redirect('Evoting:voter_list')
+
+# WARNING: REMOVE AFTER CREATING SUPERUSER
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def create_superuser(request):
+    User = get_user_model()
+    if User.objects.filter(username='admin').exists():
+        return HttpResponse("Superuser already exists")
+    
+    User.objects.create_superuser('admin', 'admin@example.com', 'AdminPassword123')
+    return HttpResponse("Superuser created")
