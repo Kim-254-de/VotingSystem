@@ -242,6 +242,19 @@
                 li.style.display = text.includes(filter) ? '' : 'none';
             });
         });
+
+        
+    const form = document.querySelector('form');
+    const idInput = document.getElementById('national_id');
+
+    form.addEventListener('submit', function(e) {
+        if (!idInput.value.trim()) {
+            alert("Please enter a valid national ID.");
+            e.preventDefault();
+        }
+    });
+     </script>
+
     </script>
 </body>
 </html>
