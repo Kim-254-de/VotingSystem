@@ -24,5 +24,5 @@ urlpatterns = [
     path('evoting/', include('Evoting.urls')),
     path('', views.home_view, name='home'),  # Home page as entry point
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-   
+]
 
