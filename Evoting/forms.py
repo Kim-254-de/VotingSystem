@@ -6,7 +6,7 @@ class VoterRegistrationForm(forms.ModelForm):
         model = Voter
         fields = ['national_id', 'name', 'date_of_birth', 'age', 'constituency', 'email','faculty']
         widgets = {
-            'national_id': forms.TextInput(attrs={'placeholder': 'National ID'}),
+            'national_id': forms.TextInput(attrs={'placeholder': 'Registration Number'}),
             'name': forms.TextInput(attrs={'placeholder': 'Full Name'}),
             'email': forms.EmailInput(attrs={'placeholder': 'Email Address'}),
             'faculty': forms.Select(attrs={'class': 'form-control'}),

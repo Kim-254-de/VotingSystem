@@ -12,11 +12,11 @@ FACULTY_CHOICES = [
     ('Medicine', 'Medicine'),
 ]
 class Voter(models.Model):
-    national_id = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=100)
-    date_of_birth = models.DateField(null=True, blank=True)  
-    age = models.PositiveIntegerField(null=True, blank=True)  
-    constituency = models.CharField(max_length=100, null=True, blank=True)  
+    national_id = models.CharField(max_length=20, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False)
+    date_of_birth = models.DateField(null=False, blank=False)  
+    age = models.PositiveIntegerField(null=False, blank=False, default=18)  
+    constituency = models.CharField(max_length=100, null=False, blank=False)  
     has_voted = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)  
     registered_by = models.ForeignKey(

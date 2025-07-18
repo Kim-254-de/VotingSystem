@@ -121,7 +121,7 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_national_id">National ID</label>
+                <label for="id_national_id">Registration Number</label>
                 {{ form.national_id }}
             </div>
             <div class="form-group">
@@ -143,6 +143,10 @@
             <div class="form-group">
                 <label for="id_email">Email</label>
                 {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_faculty">Faculty</label>
+                {{ form.faculty }}  
             </div>
             
             {% if form.errors %}
