@@ -16,7 +16,10 @@ class Voter(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)
     date_of_birth = models.DateField(null=False, blank=False)  
     age = models.PositiveIntegerField(null=False, blank=False, default=18)  
-    constituency = models.CharField(max_length=100, null=False, blank=False)  
+    constituency = models.CharField(max_length=100, null=False, blank=False)
+    faculty = models.CharField(
+        max_length=50, choices=FACULTY_CHOICES, null=False, blank=False
+    )     
     has_voted = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)  
     registered_by = models.ForeignKey(
@@ -56,7 +59,7 @@ class Candidate(models.Model):
     is_faculty_representative = models.BooleanField(default=True)  
     
     faculty = models.CharField(
-        max_length=50, choices=FACULTY_CHOICES, null=True, blank=True
+        max_length=50, choices=FACULTY_CHOICES, null=False, blank=False
     )  
 
     def __str__(self):

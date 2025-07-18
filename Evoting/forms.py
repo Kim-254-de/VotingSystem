@@ -28,6 +28,7 @@ class VoterRegistrationForm(forms.ModelForm):
         return dob
 
 class VoterVerificationForm(forms.ModelForm):
+    
     class Meta:
         model = Voter
         fields = []

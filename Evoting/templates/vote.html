@@ -205,8 +205,15 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="national_id">Enter National ID:</label>
-                    <input type="text" name="national_id" id="national_id" required>
+                    <input type="text" name="national_id" id="national_id" required value="{{ voter.national_id|default:'' }}">
+
                 </div>
+                {% if voter %}
+          <div class="voter-info">
+        <p><strong>Voter:</strong> {{ voter.name }} | <strong>Faculty:</strong> {{ voter.faculty }}</p>
+    </div>
+{% endif %}
+
                 {% for position, candidates in candidates_by_position.items %}
                     <div class="form-group">
                         <label>{{ position }}</label>

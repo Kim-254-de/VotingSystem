@@ -74,7 +74,6 @@ def verify_voter(request, national_id):
 
 
 
-
 @group_required('VotingClerks')
 @ratelimit(key='ip', rate='5/m', block=True)
 def vote(request):
@@ -82,37 +81,45 @@ def vote(request):
     candidates_by_position = {}
     already_voted = False
 
-    national_id = request.GET.get('national_id')
+    national_id = request.GET.get('national_id') or request.POST.get('national_id')
 
-
-    
-
-    positions = Candidate.objects.values_list('position', flat=True).distinct()
-    candidates_by_position = {}
-    for position in positions:
-        candidates_by_position[position] = Candidate.objects.filter(position=position)
-
-    already_voted = False
-    voters = Voter.objects.all()  
-
-    if request.method == "POST":
-        national_id = request.POST.get('national_id')
+    if national_id:
         try:
             voter = Voter.objects.get(national_id=national_id)
-            if voter.has_voted:
-                messages.error(request, "You have already voted.")
-                already_voted = True
-            else:
-                
+        except Voter.DoesNotExist:
+            messages.error(request, "Voter not registered.")
+            return render(request, "vote.html", {
+                "candidates_by_position": {},
+                "already_voted": False,
+                "voters": Voter.objects.all(),
+            })
+
+        if voter.has_voted:
+            messages.error(request, "You have already voted.")
+            already_voted = True
+        else:
+            positions = Candidate.objects.filter(faculty=voter.faculty).values_list('position', flat=True).distinct()
+            for position in positions:
+                candidates_by_position[position] = Candidate.objects.filter(position=position, faculty=voter.faculty)
+
+            if request.method == "POST":
                 for position in positions:
                     candidate_id = request.POST.get(f'candidate_{position}')
                     if candidate_id:
                         candidate = Candidate.objects.get(id=candidate_id)
+
+                        # Security check — ensure candidate belongs to same faculty
+                        if candidate.faculty != voter.faculty:
+                            messages.error(request, f"Invalid vote attempt for faculty: {candidate.faculty}")
+                            return redirect('vote')  # prevent unauthorized voting
+
                         candidate.votes += 1
                         candidate.save()
+
                 voter.has_voted = True
                 voter.save()
                 messages.success(request, "Vote cast successfully.")
+
                 if voter.email:
                     send_mail(
                         'Vote Cast Confirmation',
@@ -121,13 +128,15 @@ def vote(request):
                         [voter.email],
                         fail_silently=True,
                     )
-        except Voter.DoesNotExist:
-            messages.error(request, "Voter not registered.")
+                return redirect('vote')  # or a success page
+
     return render(request, "vote.html", {
         "candidates_by_position": candidates_by_position,
         "already_voted": already_voted,
-        "voters": voters,  
+        "voter": voter,
+        "voters": Voter.objects.all(),
     })
+
 
 
 @login_required
