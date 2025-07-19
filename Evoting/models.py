@@ -59,7 +59,7 @@ class Candidate(models.Model):
     is_faculty_representative = models.BooleanField(default=True)  
     
     faculty = models.CharField(
-        max_length=50, choices=FACULTY_CHOICES, null=False, blank=False
+        max_length=50, choices=FACULTY_CHOICES, null=True, blank=True
     )  
 
     def __str__(self):
