@@ -240,5 +240,5 @@ def send_card_by_email(request, national_id):
 def select_faculty(request):
     if request.method == 'POST':
         selected_faculty = request.POST.get('faculty')
-        return redirect('vote_faculty', faculty=selected_faculty)
+        return redirect('vote', faculty=selected_faculty)
     return render(request, 'select_faculty.html', {'faculties': FACULTY_CHOICES})
