@@ -3,7 +3,7 @@ from django.utils.html import format_html_join
 from .models import Voter, Candidate, Vote
 
 class VoterAdmin(admin.ModelAdmin):
-    list_display = ('national_id', 'name', 'date_of_birth', 'age', 'constituency', 'has_voted', 'is_verified', 'registered_by', 'registered_at', 'verified_by', 'verified_at')
+    list_display = ('national_id', 'name', 'date_of_birth', 'age', 'department', 'has_voted', 'is_verified', 'registered_by', 'registered_at', 'verified_by', 'verified_at')
 
 admin.site.register(Voter, VoterAdmin)
 
