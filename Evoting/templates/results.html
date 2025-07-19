@@ -134,7 +134,15 @@
                         </tr>
                         {% for candidate in candidates %}
                             <tr>
-                                <td>{{ candidate.name }}</td>
+                                <td>
+    {% if candidate.photo %}
+        <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" style="width:50px; height:50px; border-radius:50%; margin-right:10px; vertical-align:middle;">
+    {% else %}
+        <img src="/static/default-profile.png" style="width:50px; height:50px; border-radius:50%; margin-right:10px; vertical-align:middle;">
+    {% endif %}
+    {{ candidate.name }}
+</td>
+
                                 <td>{{ candidate.party }}</td>
                                 <td>{{ candidate.votes }}</td>
                             </tr>

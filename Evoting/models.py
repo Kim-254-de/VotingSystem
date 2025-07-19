@@ -58,6 +58,7 @@ class Candidate(models.Model):
     party = models.CharField(max_length=100, default='')  
     position = models.CharField(max_length=100, default='')  
     votes = models.PositiveIntegerField(default=0)
+    photo = models.ImageField(upload_to='candidate_photos/', blank=True, null=True)
     is_faculty_representative = models.BooleanField(default=True)  
     
     faculty = models.CharField(
