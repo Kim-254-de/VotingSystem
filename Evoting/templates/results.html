@@ -114,7 +114,7 @@
             <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}"
                  style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
         {% else %}
-            <img src="/static/default-profile.png" alt="No photo"
+            <img src="{% static 'default-profile.png' %}" alt="No photo"
                  style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
         {% endif %}
         <span>{{ candidate.name }}</span>
@@ -152,7 +152,7 @@
     {% if candidate.photo %}
         <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" style="width:50px; height:50px; border-radius:50%; margin-right:10px; vertical-align:middle;">
     {% else %}
-        <img src="/static/default-profile.png" alt="No photo" style="width:50px; height:50px; border-radius:50%; margin-right:10px; vertical-align:middle;">
+        <img src="{% static 'default-profile.png' %}" alt="No photo" style="width:50px; height:50px; border-radius:50%; margin-right:10px; vertical-align:middle;">
     {% endif %}
     {{ candidate.name }}
 </td>
