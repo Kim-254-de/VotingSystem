@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from datetime import date
+from cloudinary.models import CloudinaryField
 
 
 FACULTY_CHOICES = [
@@ -58,7 +59,7 @@ class Candidate(models.Model):
     party = models.CharField(max_length=100, default='')  
     position = models.CharField(max_length=100, default='')  
     votes = models.PositiveIntegerField(default=0)
-    photo = models.ImageField('image', blank=True, null=True)
+    photo = CloudinaryField('image', blank=True, null=True)
     is_faculty_representative = models.BooleanField(default=True)  
     
     faculty = models.CharField(
