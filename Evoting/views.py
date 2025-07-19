@@ -142,14 +142,27 @@ def vote(request, faculty):
 
 @login_required
 def results(request):
-    
-    positions = Candidate.objects.values_list('position', flat=True).distinct()
-    results_by_position = {}
-    for position in positions:
-        results_by_position[position] = Candidate.objects.filter(position=position).order_by('-votes')
-    return render(request, "results.html", {"results_by_position": results_by_position})
+    faculty_list = [f[0] for f in FACULTY_CHOICES if f[0] != 'All']
 
+    # General positions: candidates where faculty = 'All'
+    general_candidates = Candidate.objects.filter(faculty='All').order_by('position', '-votes')
+    general_results = {}
+    for position in general_candidates.values_list('position', flat=True).distinct():
+        general_results[position] = general_candidates.filter(position=position)
 
+    # Faculty-specific candidates
+    faculty_results = {}
+    for faculty in faculty_list:
+        faculty_candidates = Candidate.objects.filter(faculty=faculty).order_by('position', '-votes')
+        if faculty_candidates.exists():
+            faculty_results[faculty] = {}
+            for position in faculty_candidates.values_list('position', flat=True).distinct():
+                faculty_results[faculty][position] = faculty_candidates.filter(position=position)
+
+    return render(request, "results.html", {
+        "general_results": general_results,
+        "faculty_results": faculty_results,
+    })
 @staff_required
 def home_view(request):
     return render(request, 'index.html')

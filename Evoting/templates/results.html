@@ -86,33 +86,66 @@
         <nav>
             <a href="{% url 'Evoting:index' %}">Home</a>
             <a href="{% url 'Evoting:select_faculty' %}">Vote</a>
-
             <a href="{% url 'Evoting:register_voter' %}">Register Voter</a>
         </nav>
     </div>
+
     <div class="container">
         <h2>Election Results</h2>
-        {% for position, candidates in results_by_position.items %}
-            <h3>{{ position }}</h3>
-            <table>
-                <tr>
-                    <th>Candidate</th>
-                    <th>Party</th>
-                    <th>Votes</th>
-                </tr>
-                {% for candidate in candidates %}
-                <tr>
-                    <td>{{ candidate.name }}</td>
-                    <td>{{ candidate.party }}</td>
-                    <td>{{ candidate.votes }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" style="text-align:center;">No candidates for this position.</td>
-                </tr>
+
+        <!-- General Positions -->
+        <h3>General Positions (All Faculties)</h3>
+        {% if general_results %}
+            {% for position, candidates in general_results.items %}
+                <h4>{{ position }}</h4>
+                <table>
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Party</th>
+                        <th>Votes</th>
+                    </tr>
+                    {% for candidate in candidates %}
+                        <tr>
+                            <td>{{ candidate.name }}</td>
+                            <td>{{ candidate.party }}</td>
+                            <td>{{ candidate.votes }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        {% else %}
+            <p>No general results available.</p>
+        {% endif %}
+
+        <hr>
+
+        <!-- Faculty-Specific Positions -->
+        <h3>Faculty Representative Results</h3>
+        {% if faculty_results %}
+            {% for faculty, positions in faculty_results.items %}
+                <h4>{{ faculty }} Faculty</h4>
+                {% for position, candidates in positions.items %}
+                    <h5>{{ position }}</h5>
+                    <table>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Party</th>
+                            <th>Votes</th>
+                        </tr>
+                        {% for candidate in candidates %}
+                            <tr>
+                                <td>{{ candidate.name }}</td>
+                                <td>{{ candidate.party }}</td>
+                                <td>{{ candidate.votes }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
                 {% endfor %}
-            </table>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p>No faculty-specific results available.</p>
+        {% endif %}
     </div>
 </body>
 </html>
+
