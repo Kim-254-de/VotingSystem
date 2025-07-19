@@ -38,7 +38,7 @@ class Voter(models.Model):
     voted_at = models.DateTimeField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     faculty = models.CharField(
-        max_length=50, choices=FACULTY_CHOICES, null=True, blank=True
+        max_length=50, choices=FACULTY_CHOICES, null=False, blank=False
     )  
     
 
