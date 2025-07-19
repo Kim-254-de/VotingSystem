@@ -10,6 +10,8 @@ FACULTY_CHOICES = [
     ('Commerce', 'Commerce'),
     ('Law', 'Law'),
     ('Medicine', 'Medicine'),
+    ('Education', 'Education'),
+    ('All', 'All Faculties'),
 ]
 class Voter(models.Model):
     national_id = models.CharField(max_length=20, unique=True, null=False, blank=False)

@@ -74,7 +74,6 @@ def verify_voter(request, national_id):
 
 
 
-
 @group_required('VotingClerks')
 @ratelimit(key='ip', rate='5/m', block=True)
 def vote(request, faculty):
@@ -82,20 +81,29 @@ def vote(request, faculty):
     candidates_by_position = {}
     already_voted = False
 
-    positions = Candidate.objects.filter(faculty=faculty).values_list('position', flat=True).distinct()
-    for position in positions:
-        candidates_by_position[position] = Candidate.objects.filter(position=position, faculty=faculty)
+    # Get positions available for this faculty AND global positions (faculty='All')
+    positions = Candidate.objects.filter(
+        Q(faculty=faculty) | Q(faculty='All')
+    ).values_list('position', flat=True).distinct()
 
+    # Group candidates by position, including faculty-specific and global ones
+    for position in positions:
+        candidates_by_position[position] = Candidate.objects.filter(
+            position=position
+        ).filter(Q(faculty=faculty) | Q(faculty='All'))
+
+    # Filter only voters from the selected faculty
     voters = Voter.objects.filter(faculty=faculty)
 
     if request.method == "POST":
         national_id = request.POST.get('national_id')
         try:
             voter = Voter.objects.get(national_id=national_id)
-            
+
+            # Validate faculty
             if voter.faculty != faculty:
                 messages.error(request, "This voter does not belong to the selected faculty.")
-                return redirect('vote', faculty=faculty)
+                return redirect('Evoting:vote', faculty=faculty)
 
             if voter.has_voted:
                 messages.error(request, "You have already voted.")
@@ -107,10 +115,12 @@ def vote(request, faculty):
                         candidate = Candidate.objects.get(id=candidate_id)
                         candidate.votes += 1
                         candidate.save()
+
                 voter.has_voted = True
                 voter.save()
                 messages.success(request, "Vote cast successfully.")
 
+                # Optional: send email confirmation
                 if voter.email:
                     send_mail(
                         'Vote Cast Confirmation',
