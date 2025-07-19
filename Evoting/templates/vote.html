@@ -174,7 +174,7 @@
     </div>
     <div class="main-layout">
         <div class="sidebar">
-            <h3>Registered Voters</h3>
+            <h3>Registered Voters - {{ faculty }}</h3>
             <div class="search-bar">
                 <input type="text" id="voterSearch" placeholder="Search voter by name or ID...">
             </div>
@@ -193,6 +193,8 @@
             </ul>
         </div>
         <div class="content">
+            <h2>Cast Your Vote <span style="font-size: 0.8em; color: #777;">(Faculty: {{ faculty }})</span></h2>
+
             <h2>Cast Your Vote</h2>
             {% if messages %}
                 {% for message in messages %}

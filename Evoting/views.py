@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import Voter, Candidate
+from .models import Voter, Candidate, FACULTY_CHOICES
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib import messages
 from .forms import VoterRegistrationForm, VoterVerificationForm
@@ -77,33 +77,30 @@ def verify_voter(request, national_id):
 
 @group_required('VotingClerks')
 @ratelimit(key='ip', rate='5/m', block=True)
-def vote(request):
+def vote(request, faculty):
     voter = None
     candidates_by_position = {}
     already_voted = False
 
-    national_id = request.GET.get('national_id')
-
-
-    
-
-    positions = Candidate.objects.values_list('position', flat=True).distinct()
-    candidates_by_position = {}
+    positions = Candidate.objects.filter(faculty=faculty).values_list('position', flat=True).distinct()
     for position in positions:
-        candidates_by_position[position] = Candidate.objects.filter(position=position)
+        candidates_by_position[position] = Candidate.objects.filter(position=position, faculty=faculty)
 
-    already_voted = False
-    voters = Voter.objects.all()  
+    voters = Voter.objects.filter(faculty=faculty)
 
     if request.method == "POST":
         national_id = request.POST.get('national_id')
         try:
             voter = Voter.objects.get(national_id=national_id)
+            
+            if voter.faculty != faculty:
+                messages.error(request, "This voter does not belong to the selected faculty.")
+                return redirect('vote', faculty=faculty)
+
             if voter.has_voted:
                 messages.error(request, "You have already voted.")
                 already_voted = True
             else:
-                
                 for position in positions:
                     candidate_id = request.POST.get(f'candidate_{position}')
                     if candidate_id:
@@ -113,6 +110,7 @@ def vote(request):
                 voter.has_voted = True
                 voter.save()
                 messages.success(request, "Vote cast successfully.")
+
                 if voter.email:
                     send_mail(
                         'Vote Cast Confirmation',
@@ -123,10 +121,12 @@ def vote(request):
                     )
         except Voter.DoesNotExist:
             messages.error(request, "Voter not registered.")
+
     return render(request, "vote.html", {
+        "faculty": faculty,
         "candidates_by_position": candidates_by_position,
         "already_voted": already_voted,
-        "voters": voters,  
+        "voters": voters,
     })
 
 
@@ -235,3 +235,10 @@ def send_card_by_email(request, national_id):
 
     return redirect('Evoting:voter_list')
 
+
+
+def select_faculty(request):
+    if request.method == 'POST':
+        selected_faculty = request.POST.get('faculty')
+        return redirect('vote_faculty', faculty=selected_faculty)
+    return render(request, 'select_faculty.html', {'faculties': FACULTY_CHOICES})
