@@ -18,4 +18,4 @@ services:
       - key: EMAIL_HOST_PASSWORD
         sync: false
       - key: DEBUG
-        value: "True"
+        value: "False"
