@@ -158,6 +158,49 @@
             color: #d32f2f;
             border: 1px solid #ffbdbd;
         }
+        .custom-dropdown {
+            position: relative;
+            user-select: none;
+        }
+        .dropdown-selected {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-top: none;
+            background: #fff;
+            z-index: 10;
+            display: none;
+            flex-direction: column;
+        }
+        .dropdown-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .dropdown-option:hover {
+            background: #f0f0f0;
+        }
+        .dropdown-option img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
         @media (max-width: 900px) {
             .main-layout { flex-direction: column; }
             .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e0e0e0; }
@@ -214,27 +257,23 @@
                     <div class="form-group">
                         <label>{{ position }}</label>
                         <div class="custom-dropdown" data-position="{{ position }}">
-    <input type="hidden" name="candidate_{{ position }}" id="input_{{ position }}">
-    <div class="dropdown-selected">-- Select Candidate --</div>
-    <div class="dropdown-options">
-        {% for candidate in candidates %}
-            <div class="dropdown-option" data-id="{{ candidate.id }}">
-               {% if candidate.photo %}
-    <img src="{{ candidate.photo.url }}"
-         alt="{{ candidate.name }}"
-         style="width: 35px; height: 35px; border-radius: 50%; margin-right: 8px;">
-{% else %}
-    <img src="{% static 'Evoting/default-profile.png' %}"
-         alt="{{ candidate.name }}"
-         style="width: 35px; height: 35px; border-radius: 50%; margin-right: 8px;">
-{% endif %}
-<span>{{ candidate.name }} ({{ candidate.party }})</span>
-
-            </div>
-        {% endfor %}
-    </div>
-</div>
-
+                            <input type="hidden" name="candidate_{{ position }}" id="input_{{ position }}">
+                            <div class="dropdown-selected">-- Select Candidate --</div>
+                            <div class="dropdown-options">
+                                {% for candidate in candidates %}
+                                    <div class="dropdown-option" data-id="{{ candidate.id }}">
+                                        {% if candidate.photo %}
+                                            <img src="{{ candidate.photo.url }}"
+                                                 alt="{{ candidate.name }}">
+                                        {% else %}
+                                            <img src="{% static 'Evoting/default-profile.png' %}"
+                                                 alt="No photo">
+                                        {% endif %}
+                                        <span>{{ candidate.name }} ({{ candidate.party }})</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
                 <button type="submit">Submit Vote</button>
@@ -252,6 +291,42 @@
             voters.forEach(function(li) {
                 var text = li.textContent.toLowerCase();
                 li.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        // Custom dropdown functionality
+        document.querySelectorAll('.custom-dropdown').forEach(function(dropdown) {
+            var selected = dropdown.querySelector('.dropdown-selected');
+            var options = dropdown.querySelector('.dropdown-options');
+            var hiddenInput = dropdown.querySelector('input[type="hidden"]');
+
+            selected.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Close other dropdowns
+                document.querySelectorAll('.dropdown-options').forEach(function(opt) {
+                    if (opt !== options) {
+                        opt.style.display = 'none';
+                    }
+                });
+                // Toggle current dropdown
+                options.style.display = options.style.display === 'flex' ? 'none' : 'flex';
+            });
+
+            options.querySelectorAll('.dropdown-option').forEach(function(option) {
+                option.addEventListener('click', function() {
+                    var candidateId = this.getAttribute('data-id');
+                    var candidateName = this.textContent.trim();
+                    hiddenInput.value = candidateId;
+                    selected.textContent = candidateName;
+                    options.style.display = 'none';
+                });
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.dropdown-options').forEach(function(opt) {
+                opt.style.display = 'none';
             });
         });
     </script>
