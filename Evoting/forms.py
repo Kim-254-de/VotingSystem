@@ -12,6 +12,7 @@ class VoterRegistrationForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Full Name'}),
             'email': forms.EmailInput(attrs={'placeholder': 'Email Address'}),
             'department': forms.TextInput(attrs={'placeholder': 'Department'}),
+            'age': forms.NumberInput(attrs={'placeholder': 'Age'}),
 
             'faculty': forms.Select(attrs={'class': 'form-control'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),

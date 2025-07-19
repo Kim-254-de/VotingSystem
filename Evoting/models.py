@@ -16,8 +16,8 @@ FACULTY_CHOICES = [
 class Voter(models.Model):
     national_id = models.CharField(max_length=20, unique=True, null=False, blank=False)
     name = models.CharField(max_length=100, null=False, blank=False)
-    date_of_birth = models.DateField(null=False, blank=False, default=date.today)  
-    age = models.PositiveIntegerField(null=False, blank=False, default=15)  
+    date_of_birth = models.DateField(null=False, blank=False)  
+    age = models.PositiveIntegerField(null=False, blank=False)  
     department = models.CharField(max_length=100, null=False, blank=False, default='')
     faculty = models.CharField(
         max_length=50, choices=FACULTY_CHOICES, null=False, blank=False
