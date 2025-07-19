@@ -6,11 +6,12 @@ from datetime import date
 class VoterRegistrationForm(forms.ModelForm):
     class Meta:
         model = Voter
-        fields = ['national_id', 'name', 'date_of_birth', 'age', 'constituency', 'email','faculty']
+        fields = ['national_id', 'name', 'date_of_birth', 'age', 'department', 'email','faculty']
         widgets = {
             'national_id': forms.TextInput(attrs={'placeholder': 'Registration Number'}),
             'name': forms.TextInput(attrs={'placeholder': 'Full Name'}),
             'email': forms.EmailInput(attrs={'placeholder': 'Email Address'}),
+            'department': forms.TextInput(attrs={'placeholder': 'Department'}),
 
             'faculty': forms.Select(attrs={'class': 'form-control'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
