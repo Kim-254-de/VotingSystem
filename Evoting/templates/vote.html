@@ -212,12 +212,21 @@
                 {% for position, candidates in candidates_by_position.items %}
                     <div class="form-group">
                         <label>{{ position }}</label>
-                        <select name="candidate_{{ position }}">
-                            <option value="">-- Select Candidate --</option>
-                            {% for candidate in candidates %}
-                                <option value="{{ candidate.id }}">{{ candidate.name }} ({{ candidate.party }})</option>
-                            {% endfor %}
-                        </select>
+                        <div class="custom-dropdown" data-position="{{ position }}">
+    <input type="hidden" name="candidate_{{ position }}" id="input_{{ position }}">
+    <div class="dropdown-selected">-- Select Candidate --</div>
+    <div class="dropdown-options">
+        {% for candidate in candidates %}
+            <div class="dropdown-option" data-id="{{ candidate.id }}">
+                <img src="{{ candidate.photo.url if candidate.photo else '/static/default-profile.png' }}" 
+                     alt="{{ candidate.name }}" 
+                     style="width: 35px; height: 35px; border-radius: 50%; margin-right: 8px;">
+                <span>{{ candidate.name }} ({{ candidate.party }})</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
                     </div>
                 {% endfor %}
                 <button type="submit">Submit Vote</button>

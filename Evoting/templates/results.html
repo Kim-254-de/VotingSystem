@@ -106,7 +106,19 @@
                     </tr>
                     {% for candidate in candidates %}
                         <tr>
-                            <td>{{ candidate.name }}</td>
+                            <td>
+    <div style="display: flex; align-items: center;">
+        {% if candidate.photo %}
+            <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}"
+                 style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+        {% else %}
+            <img src="/static/default-profile.png" alt="No photo"
+                 style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+        {% endif %}
+        <span>{{ candidate.name }}</span>
+    </div>
+</td>
+
                             <td>{{ candidate.party }}</td>
                             <td>{{ candidate.votes }}</td>
                         </tr>
