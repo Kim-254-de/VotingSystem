@@ -108,7 +108,8 @@
                 labels: ['Voted', 'Did Not Vote'],
                 datasets: [{
                     label: 'Voter Turnout',
-                    data: [{{ total_voted }}, {{ total_registered|add:"-total_voted" }}],
+                    data: [{{ total_voted }}, {{ total_registered|floatformat:0 }} - {{ total_voted|floatformat:0 }}],
+
                     backgroundColor: ['#36a2eb', '#ff6384'],
                     borderColor: ['#ffffff', '#ffffff'],
                     borderWidth: 1
