@@ -14,5 +14,6 @@ urlpatterns = [
     path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('generate_pdf/<int:national_id>/', views.generate_pdf, name='generate_pdf'),
     path('vote/', views.select_faculty, name='select_faculty'),
+    path('turnout/', views.voter_turnout_view, name='turnout'),
     
 ]

@@ -265,3 +265,19 @@ def select_faculty(request):
         selected_faculty = request.POST.get('faculty')
         return redirect('Evoting:vote', faculty=selected_faculty)
     return render(request, 'select_faculty.html', {'faculty_choices': FACULTY_CHOICES})
+
+from django.shortcuts import render
+from .models import Voter
+
+def voter_turnout_view(request):
+    total_registered = Voter.objects.count()
+    total_voted = Voter.objects.filter(has_voted=True).count()
+    
+    turnout_percentage = (total_voted / total_registered * 100) if total_registered else 0
+
+    context = {
+        'total_registered': total_registered,
+        'total_voted': total_voted,
+        'turnout_percentage': round(turnout_percentage, 2),
+    }
+    return render(request, 'turnout.html', context)
