@@ -1,9 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Voter Turnout | VotingApp</title>
+body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #222;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    header {
+      background: #16a34a;
+      padding: 16px 24px;
+      box-shadow: 0 1px 10px rgb(0 0 0 / 0.10);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header a.logo {
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.75rem;
+      text-decoration: none;
+      user-select: none;
+      text-shadow: 0 0 5px rgba(0,0,0,0.10);
+    }
+    header a.logo:hover,
+    header a.logo:focus {
+      color: #a7f3d0;
+      outline: none;
+      text-decoration: underline;
+    }
+    main {
+      max-width: 900px;
+      margin: 48px auto 96px;
+      padding: 0 24px;
+    }
+    h2 {
+      font-weight: 700;
+      font-size: 2rem;
+      color: #16a34a;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 1.125rem;
+      color: #166534cc;
+      max-width: 400px;
+      margin: 0 auto;
+      border: 1px solid #16a34a;
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgb(22 163 74 / 0.08),
+        0 8px 40px rgb(22 163 74 / 0.10);
+      background: #f0fdf4;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    li {
+      padding: 16px 24px;
+      border-bottom: 1px solid #16a34a;
+    }
+    li:last-child {
+      border-bottom: none;
+    }
+    canvas#turnoutChart {
+      max-width: 100%;
+      height: auto !important;
+      display: block;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) {
+      main {
+        margin: 24px 12px 48px;
+        padding: 0 12px;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 16px;
+      }
+      ul {
+        font-size: 1rem;
+        max-width: 100%;
+        margin: 0 8px;
+      }
+      li {
+        padding: 12px 16px;
+      }
+    }
+  </style>
+=======
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -115,42 +207,3 @@
       }
     }
   </style>
-</head>
-<body>
-  <header>
-    <a href="{% url 'Evoting:index' %}" class="logo" aria-label="VotingApp Home">VotingApp</a>
-  </header>
-  <main>
-    <h2>Voter Turnout Statistics</h2>
-    <ul>
-      <li>Total Registered Voters: {{ total_registered }}</li>
-      <li>Total Voters Who Voted: {{ total_voted }}</li>
-      <li>Turnout Percentage: {{ turnout_percentage }}%</li>
-    </ul>
-    <canvas id="turnoutChart" aria-label="Voter turnout chart" role="img"></canvas>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <script>
-    const ctx = document.getElementById('turnoutChart').getContext('2d');
-    const turnoutChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: ['Voted', 'Did Not Vote'],
-        datasets: [{
-          label: 'Voter Turnout',
-          data: [{{ total_voted }}, {{ total_registered|floatformat:0 }} - {{ total_voted|floatformat:0 }}],
-          backgroundColor: ['#36a2eb', '#ff6384'],
-          borderColor: ['#ffffff', '#ffffff'],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
-    });
-  </script>
-</body>
-</html>
