@@ -88,6 +88,53 @@
       <li>Total Voters Who Voted: {{ total_voted }}</li>
       <li>Turnout Percentage: {{ turnout_percentage }}%</li>
     </ul>
-  </main>
+  <main>
+    <h2>Voter Turnout Statistics</h2>
+    <canvas id="turnoutChart" width="400" height="300" aria-label="Voter turnout chart" role="img"></canvas>
+    <ul>
+      <li>Total Registered Voters: {{ total_registered }}</li>
+      <li>Total Voters Who Voted: {{ total_voted }}</li>
+      <li>Turnout Percentage: {{ turnout_percentage }}%</li>
+  </ul>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('turnoutChart').getContext('2d');
+    const turnoutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Voted', 'Did Not Vote'],
+        datasets: [{
+          label: 'Voter Turnout',
+          data: [{{ total_voted }}, {{ total_registered|add:"-total_voted" }}],
+          backgroundColor: [
+            'rgba(22, 163, 74, 0.7)',
+            'rgba(220, 220, 220, 0.7)'
+          ],
+          borderColor: [
+            'rgba(22, 163, 74, 1)',
+            'rgba(200, 200, 200, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font: {
+                size: 14
+              }
+            }
+          },
+          tooltip: {
+            enabled: true
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
