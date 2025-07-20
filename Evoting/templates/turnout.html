@@ -67,6 +67,8 @@
         0 0 0 1px rgb(22 163 74 / 0.08),
         0 8px 40px rgb(22 163 74 / 0.10);
       background: #f0fdf4;
+      width: 100%;
+      box-sizing: border-box;
     }
     li {
       padding: 16px 24px;
@@ -74,6 +76,30 @@
     }
     li:last-child {
       border-bottom: none;
+    }
+    canvas#turnoutChart {
+      max-width: 100%;
+      height: auto !important;
+      display: block;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) {
+      main {
+        margin: 24px 12px 48px;
+        padding: 0 12px;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 16px;
+      }
+      ul {
+        font-size: 1rem;
+        max-width: 100%;
+        margin: 0 8px;
+      }
+      li {
+        padding: 12px 16px;
+      }
     }
   </style>
 </head>
@@ -88,37 +114,30 @@
       <li>Total Voters Who Voted: {{ total_voted }}</li>
       <li>Turnout Percentage: {{ turnout_percentage }}%</li>
     </ul>
-  <main>
-    <h2>Voter Turnout Statistics</h2>
-    <canvas id="turnoutChart" width="400" height="300" aria-label="Voter turnout chart" role="img"></canvas>
+    <canvas id="turnoutChart" aria-label="Voter turnout chart" role="img"></canvas>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-   
 
-    <canvas id="turnoutChart" width="400" height="400"></canvas>
-
-    <script>
-        const ctx = document.getElementById('turnoutChart').getContext('2d');
-        const turnoutChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Voted', 'Did Not Vote'],
-                datasets: [{
-                    label: 'Voter Turnout',
-                    data: [{{ total_voted }}, {{ total_registered|floatformat:0 }} - {{ total_voted|floatformat:0 }}],
-
-                    backgroundColor: ['#36a2eb', '#ff6384'],
-                    borderColor: ['#ffffff', '#ffffff'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    </script>
+  <script>
+    const ctx = document.getElementById('turnoutChart').getContext('2d');
+    const turnoutChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Voted', 'Did Not Vote'],
+        datasets: [{
+          label: 'Voter Turnout',
+          data: [{{ total_voted }}, {{ total_registered|floatformat:0 }} - {{ total_voted|floatformat:0 }}],
+          backgroundColor: ['#36a2eb', '#ff6384'],
+          borderColor: ['#ffffff', '#ffffff'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  </script>
 </body>
 </html>
