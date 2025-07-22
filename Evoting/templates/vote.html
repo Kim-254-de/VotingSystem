@@ -263,7 +263,7 @@
             </ul>
         </div>
         <div class="content">
-            <h2>Cast Your Vote <span style="font-size: 0.8em; color: #777;">(Faculty: {{ faculty }})</span></h2>
+            <h2><span style="font-size: 0.8em; color: #777;">(Faculty: {{ faculty }})</span></h2>
 
             <h2>Cast Your Vote</h2>
             {% if messages %}
@@ -276,7 +276,7 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="national_id">Enter National ID:</label>
+                    <label for="national_id">Enter Reg No:</label>
                     <input type="text" name="national_id" id="national_id" required>
                 </div>
                 {% for position, candidates in candidates_by_position.items %}
