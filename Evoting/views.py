@@ -43,7 +43,7 @@ def register_voter(request):
                     upload_result = cloudinary.uploader.upload(
                         image_data,
                         folder="voter_photos/",  # optional: organizes uploads
-                        public_id=f"voter_{voter.reg_no}",  # optional: custom ID
+                        public_id=f"voter_{voter.national_id}",  # optional: custom ID
                         overwrite=True,
                         resource_type="image"
                     )
@@ -55,7 +55,7 @@ def register_voter(request):
             voter.save()
 
             # Audit log
-            audit_logger.info(f"Voter registered: {voter.reg_no} by {request.user.username}")
+            audit_logger.info(f"Voter registered: {voter.national_id} by {request.user.username}")
 
             # Email notification
             if voter.email:
