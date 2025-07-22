@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Register Voter</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
-    <script defer src="{% static 'js/face-validation.js' %}"></script>
+    <script defer src="{% static 'app/js/face-validation.js' %}"></script>
     <img id="preview" src="{% static 'app/images/default-profile.png' %}" alt="Preview" width="240" height="200">
 
     <style>
@@ -225,71 +225,7 @@
     </div>
 
     <script>
-        let faceDetected = false;
-
-        async function loadFaceAPI() {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('/static/models/');
-        }
-
-        loadFaceAPI().then(() => {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-
-                .then(stream => {
-                    const video = document.getElementById('video');
-                    video.srcObject = stream;
-
-                    video.addEventListener('play', () => {
-                        const displaySize = { width: video.width, height: video.height };
-
-                        setInterval(async () => {
-                            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-
-                            if (detections.length === 1) {
-                                faceDetected = true;
-                                document.getElementById('faceStatus').innerText = "Face detected.";
-                                document.getElementById('capture').disabled = false;
-                            } else if (detections.length > 1) {
-                                faceDetected = false;
-                                document.getElementById('faceStatus').innerText = " Multiple faces detected. Please ensure only one person is visible.";
-                                document.getElementById('capture').disabled = true;
-                            } else {
-                                faceDetected = false;
-                                document.getElementById('faceStatus').innerText = "No face detected. Please face the camera.";
-                                document.getElementById('capture').disabled = true;
-                            }
-                        }, 700);
-                    });
-                });
-        });
-
-        document.getElementById('capture').addEventListener('click', () => {
-            if (!faceDetected) {
-                alert("Face must be detected before capturing.");
-                return;
-            }
-            const canvas = document.getElementById('canvas');
-            const video = document.getElementById('video');
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            document.getElementById('photoData').value = dataUrl;
-            document.getElementById('preview').src = dataUrl;
-            document.getElementById('camera-section').style.display = 'none';
-            document.getElementById('preview-section').style.display = 'block';
-        });
-
-        document.getElementById('retake').addEventListener('click', () => {
-            document.getElementById('photoData').value = '';
-            document.getElementById('preview-section').style.display = 'none';
-            document.getElementById('camera-section').style.display = 'block';
-        });
-
-        function validateBeforeSubmit() {
-            if (!document.getElementById('photoData').value) {
-                alert("You must capture a valid photo before submitting.");
-                return false;
-            }
-            return true;
-        }
+        
 
         // auto-fill age from date of birth
         document.addEventListener('DOMContentLoaded', function() {
