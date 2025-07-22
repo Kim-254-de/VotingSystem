@@ -7,7 +7,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
     <script defer src="{% static 'app/js/face-validation.js' %}"></script>
-    <img id="preview" src="{% static 'app/images/default-profile.png' %}" alt="Preview" width="240" height="200">
+    
 
     <style>
         body {
@@ -207,7 +207,8 @@
 
             <div class="form-group" id="preview-section" style="display:none;">
                 <label>Captured Photo:</label><br>
-                <img id="preview" width="300"><br>
+                <img id="preview" src="{% static 'app/images/default-profile.png' %}" alt="Preview" width="240" height="200">
+
                 <button type="button" id="retake">Retake Photo</button>
             </div>
 
