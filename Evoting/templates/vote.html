@@ -259,7 +259,7 @@
     <ul class="voter-list" id="voterList">
         {% for voter in voters %}
             <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <img src="{{ voter.photo.url }}" alt="Photo" class="voter-photo">
+                <img src="{{ voter.photo_url.url }}" alt="Photo" class="voter-photo">
                 <div>
                     <strong>{{ voter.name }}</strong><br>
                     <span style="font-size:0.93em; color:#555;">ID: {{ voter.national_id }}</span>
