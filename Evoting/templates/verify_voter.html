@@ -81,14 +81,64 @@
         <h2>Verify Voter</h2>
         <div class="voter-info">
             <p><strong>Name:</strong> {{ voter.name }}</p>
-            <p><strong>REG NO:</strong> {{ voter.national_id }}</p>
+            <p><strong>Reg no:</strong> {{ voter.national_id }}</p>
         </div>
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit">Verify</button>
-        </form>
-        <a href="{% url 'Evoting:generate_pdf' voter.id %}" class="back-home">Download Voter Card</a>
-        <a href="{% url 'Evoting:voter_list' %}" class="back-home">← Back to Voter List</a>
+        <form method="post" id="verifyForm">
+    {% csrf_token %}
+    <button type="submit" id="verifyDownloadBtn">Verify & Download</button>
+   </form>
+
+       <a href="{% url 'Evoting:generate_pdf' voter.id %}" id="pdfDownloadLink" target="_blank" style="display: none;"></a>
+
+
+        <a href="{% url 'Evoting:voter_list' %}" class="back-home"> Back to Voter List</a>
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("verifyForm");
+    const downloadLink = document.getElementById("pdfDownloadLink");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault(); // prevent default form submission
+
+        // Create a hidden form to POST the verification
+        const tempForm = document.createElement("form");
+        tempForm.method = "POST";
+        tempForm.action = ""; // submits to current URL
+        tempForm.style.display = "none";
+
+        // Add CSRF token input
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+        tempForm.appendChild(csrfInput);
+
+        document.body.appendChild(tempForm);
+
+        // Submit verification first
+        fetch("", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": csrfToken
+            },
+            body: ""
+        }).then(response => {
+            if (response.ok) {
+                // Trigger PDF download after verification
+                downloadLink.click();
+            } else {
+                alert("Verification failed.");
+            }
+        }).catch(error => {
+            console.error("Error verifying voter:", error);
+            alert("An error occurred during verification.");
+        });
+    });
+});
+</script>
+
 </body>
 </html>
