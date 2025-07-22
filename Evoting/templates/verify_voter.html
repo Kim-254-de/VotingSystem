@@ -87,6 +87,11 @@
     {% csrf_token %}
     <button type="submit" id="verifyDownloadBtn">Verify & Download</button>
    </form>
+   <div id="successMessage" style="display: none; text-align: center; margin-top: 20px;">
+    <img src="{% static 'Evoting/images/success-check.png' %}" alt="Success" width="100">
+    <p style="color: green; font-weight: bold;">Voter Verified Successfully!</p>
+</div>
+
 
        <a href="{% url 'Evoting:generate_pdf' voter.id %}" id="pdfDownloadLink" target="_blank" style="display: none;"></a>
 
@@ -97,27 +102,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("verifyForm");
     const downloadLink = document.getElementById("pdfDownloadLink");
+    const successMessage = document.getElementById("successMessage");
 
     form.addEventListener("submit", function (e) {
         e.preventDefault(); // prevent default form submission
 
-        // Create a hidden form to POST the verification
-        const tempForm = document.createElement("form");
-        tempForm.method = "POST";
-        tempForm.action = ""; // submits to current URL
-        tempForm.style.display = "none";
-
-        // Add CSRF token input
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        const csrfInput = document.createElement("input");
-        csrfInput.type = "hidden";
-        csrfInput.name = "csrfmiddlewaretoken";
-        csrfInput.value = csrfToken;
-        tempForm.appendChild(csrfInput);
 
-        document.body.appendChild(tempForm);
-
-        // Submit verification first
         fetch("", {
             method: "POST",
             headers: {
@@ -127,8 +118,13 @@ document.addEventListener("DOMContentLoaded", function () {
             body: ""
         }).then(response => {
             if (response.ok) {
-                // Trigger PDF download after verification
-                downloadLink.click();
+                // Show success message
+                successMessage.style.display = "block";
+
+                // Wait 1.5 seconds before opening the PDF
+                setTimeout(() => {
+                    downloadLink.click();
+                }, 1500);
             } else {
                 alert("Verification failed.");
             }
