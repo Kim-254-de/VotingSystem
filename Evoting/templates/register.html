@@ -167,7 +167,7 @@
             </div>
         {% endif %}
 
-        <form method="post">
+        <form id="VoterRegistrationForm" method="POST" enctype="multipart/form-data"></form>
             {% csrf_token %}
             <div class="form-group">
                 <label for="id_national_id">Registration Number</label>

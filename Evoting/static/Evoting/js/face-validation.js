@@ -1,15 +1,18 @@
-// Load face detection model
+// Load FaceAPI model
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/static/Evoting/models')
-]).then(startWebcam).catch(err => {
+])
+.then(startWebcam)
+.catch(err => {
     console.error("Model loading failed:", err);
     alert("Failed to load face detection model.");
 });
 
-const video = document.getElementById('video');
+// DOM elements
+const videoEl = document.getElementById('video');
 const canvas = document.getElementById('canvas');
-const captureButton = document.getElementById('capture');
-const retakeButton = document.getElementById('retake');
+const captureBtn = document.getElementById('capture');
+const retakeBtn = document.getElementById('retake');
 const imageInput = document.getElementById('photoData');
 const previewImage = document.getElementById('preview');
 const faceStatus = document.getElementById('faceStatus');
@@ -17,21 +20,23 @@ const faceStatus = document.getElementById('faceStatus');
 let captured = false;
 let faceDetected = false;
 
+// Start webcam
 function startWebcam() {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
         .then(stream => {
-            video.srcObject = stream;
-            captureButton.disabled = false;
+            videoEl.srcObject = stream;
+            captureBtn.disabled = false;
         })
         .catch(err => {
-            alert("Please allow webcam access.");
+            alert("Please allow webcam access to capture your photo.");
             console.error("Webcam error:", err);
         });
 }
 
+// Capture photo and detect face
 async function capturePhoto() {
     const context = canvas.getContext("2d");
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    context.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
 
     const base64Image = canvas.toDataURL("image/jpeg");
     previewImage.src = base64Image;
@@ -51,11 +56,12 @@ async function capturePhoto() {
         faceStatus.style.color = "red";
     }
 
-    captureButton.style.display = "none";
-    retakeButton.style.display = "inline-block";
-    video.style.display = "none";
+    captureBtn.style.display = "none";
+    retakeBtn.style.display = "inline-block";
+    videoEl.style.display = "none";
 }
 
+// Retake photo
 function retakePhoto() {
     captured = false;
     faceDetected = false;
@@ -64,11 +70,12 @@ function retakePhoto() {
     previewImage.style.display = "none";
     faceStatus.textContent = '';
 
-    captureButton.style.display = "inline-block";
-    retakeButton.style.display = "none";
-    video.style.display = "block";
+    captureBtn.style.display = "inline-block";
+    retakeBtn.style.display = "none";
+    videoEl.style.display = "block";
 }
 
+// Validate form before submitting
 function validateAndSubmit(event) {
     if (!captured) {
         event.preventDefault();
@@ -79,9 +86,17 @@ function validateAndSubmit(event) {
     }
 }
 
-// Hook everything after DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-    captureButton.addEventListener("click", capturePhoto);
-    retakeButton.addEventListener("click", retakePhoto);
-    document.querySelector("#VoterRegistrationForm").addEventListener("submit", validateAndSubmit);
+// Initialize on DOM load
+document.addEventListener("DOMContentLoaded", function () {
+    if (captureBtn && retakeBtn && videoEl && canvas && imageInput && previewImage) {
+        captureBtn.addEventListener("click", capturePhoto);
+        retakeBtn.addEventListener("click", retakePhoto);
+    }
+
+    const form = document.querySelector("#VoterRegistrationForm");
+    if (form) {
+        form.addEventListener("submit", validateAndSubmit);
+    } else {
+        console.warn("Form with ID #VoterRegistrationForm not found.");
+    }
 });
