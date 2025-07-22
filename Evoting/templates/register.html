@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Register Voter</title>
+    <script defer src="{% static 'js/face-validation.js' %}"></script>
+    <img id="preview" src="{% static 'app/images/default-profile.png' %}" alt="Preview" width="240" height="200">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -98,19 +101,61 @@
             transition: color 0.3s;
         }
         .back-home:hover, .back-home:focus { color: #0e7c34; }
-    </style>
+        #camera-section, #preview-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #video {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        #preview {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+            margin-top: 10px;
+        }
+        #faceStatus {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #capture, #retake {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #capture:disabled, #retake:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #capture:hover:not(:disabled), #retake:hover:not(:disabled) {
+            background: #0e7c34;
+        }
+        #canvas {
+            display: none;
+        }
+        
+
+ </style>
 </head>
 <body>
     <div class="header">
         <span>VotingApp</span>
-        <nav style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        <nav>
             <a href="{% url 'Evoting:index' %}">Home</a>
             <a href="{% url 'Evoting:voter_list' %}">Voter List</a>
             <a href="{% url 'Evoting:results' %}">Results</a>
         </nav>
     </div>
+
     <div class="container">
         <h2>Register Voter</h2>
+
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
@@ -118,6 +163,7 @@
                 {% endfor %}
             </div>
         {% endif %}
+
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
@@ -136,7 +182,6 @@
                 <label for="id_age">Age</label>
                 {{ form.age }}
             </div>
-            
             <div class="form-group">
                 <label for="id_department">Department</label>
                 {{ form.department }}
@@ -149,32 +194,117 @@
                 <label for="id_faculty">Faculty</label>
                 {{ form.faculty }}  
             </div>
-            
+
+            <div class="form-group" id="camera-section">
+                <label>Take Voter Photo (Required):</label><br>
+                <video id="video" width="300" height="200" autoplay muted></video><br>
+                <p id="faceStatus" style="color:red;"></p>
+                <button type="button" id="capture" disabled>Capture Photo</button>
+            </div>
+
+            <div class="form-group" id="preview-section" style="display:none;">
+                <label>Captured Photo:</label><br>
+                <img id="preview" width="300"><br>
+                <button type="button" id="retake">Retake Photo</button>
+            </div>
+
+            <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
+            <input type="hidden" name="photo_data" id="photoData">
+
             {% if form.errors %}
-    <div class="messages">
-        {{ form.errors }}
-    </div>
-{% endif %}
-            <button type="submit">Register</button>
+                <div class="messages">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <br>
+            <button type="submit" onclick="return validateBeforeSubmit()">Register</button>
         </form>
     </div>
+
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const dobInput = document.getElementById('id_date_of_birth');
-    const ageInput = document.getElementById('id_age');
-    if (dobInput && ageInput) {
-        dobInput.addEventListener('change', function() {
-            const dob = new Date(this.value);
-            const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            const m = today.getMonth() - dob.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-                age--;
-            }
-            ageInput.value = age > 0 ? age : '';
+        let faceDetected = false;
+
+        async function loadFaceAPI() {
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/static/models/');
+        }
+
+        loadFaceAPI().then(() => {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+
+                .then(stream => {
+                    const video = document.getElementById('video');
+                    video.srcObject = stream;
+
+                    video.addEventListener('play', () => {
+                        const displaySize = { width: video.width, height: video.height };
+
+                        setInterval(async () => {
+                            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+
+                            if (detections.length === 1) {
+                                faceDetected = true;
+                                document.getElementById('faceStatus').innerText = "Face detected.";
+                                document.getElementById('capture').disabled = false;
+                            } else if (detections.length > 1) {
+                                faceDetected = false;
+                                document.getElementById('faceStatus').innerText = " Multiple faces detected. Please ensure only one person is visible.";
+                                document.getElementById('capture').disabled = true;
+                            } else {
+                                faceDetected = false;
+                                document.getElementById('faceStatus').innerText = "No face detected. Please face the camera.";
+                                document.getElementById('capture').disabled = true;
+                            }
+                        }, 700);
+                    });
+                });
         });
-    }
-});
-</script>
+
+        document.getElementById('capture').addEventListener('click', () => {
+            if (!faceDetected) {
+                alert("Face must be detected before capturing.");
+                return;
+            }
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            document.getElementById('photoData').value = dataUrl;
+            document.getElementById('preview').src = dataUrl;
+            document.getElementById('camera-section').style.display = 'none';
+            document.getElementById('preview-section').style.display = 'block';
+        });
+
+        document.getElementById('retake').addEventListener('click', () => {
+            document.getElementById('photoData').value = '';
+            document.getElementById('preview-section').style.display = 'none';
+            document.getElementById('camera-section').style.display = 'block';
+        });
+
+        function validateBeforeSubmit() {
+            if (!document.getElementById('photoData').value) {
+                alert("You must capture a valid photo before submitting.");
+                return false;
+            }
+            return true;
+        }
+
+        // auto-fill age from date of birth
+        document.addEventListener('DOMContentLoaded', function() {
+            const dobInput = document.getElementById('id_date_of_birth');
+            const ageInput = document.getElementById('id_age');
+            if (dobInput && ageInput) {
+                dobInput.addEventListener('change', function() {
+                    const dob = new Date(this.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const m = today.getMonth() - dob.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                        age--;
+                    }
+                    ageInput.value = age > 0 ? age : '';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

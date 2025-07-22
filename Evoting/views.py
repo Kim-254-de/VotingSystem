@@ -14,6 +14,9 @@ from django.template.loader import get_template
 from io import BytesIO
 from django.core.mail import EmailMessage
 from django.core.mail import send_mail
+import base64
+import cloudinary.uploader
+from django.core.files.base import ContentFile
 
 
 audit_logger = logging.getLogger('audit')
@@ -22,32 +25,55 @@ audit_logger = logging.getLogger('audit')
 def staff_required(view_func):
     return user_passes_test(lambda u: u.is_staff)(view_func)
 
-
 @group_required('VoterRegistrars')
 def register_voter(request):
     if request.method == "POST":
         form = VoterRegistrationForm(request.POST)
+        photo_data = request.POST.get('photo_data')
+
         if form.is_valid():
             voter = form.save(commit=False)
             voter.registered_by = request.user
+
+            # Upload base64 image to Cloudinary and get public_id
+            if photo_data:
+                try:
+                    format, imgstr = photo_data.split(';base64,') 
+                    image_data = base64.b64decode(imgstr)
+                    upload_result = cloudinary.uploader.upload(
+                        image_data,
+                        folder="voter_photos/",  # optional: organizes uploads
+                        public_id=f"voter_{voter.reg_no}",  # optional: custom ID
+                        overwrite=True,
+                        resource_type="image"
+                    )
+                    voter.photo_url = upload_result['public_id']  # for CloudinaryField
+                except Exception as e:
+                    messages.error(request, f"Photo upload failed: {str(e)}")
+                    return redirect('Evoting:register_voter')  # reload form
+
             voter.save()
-            
-            audit_logger.info(f"Voter registered: {voter.national_id} by {request.user.username}")
-            
+
+            # Audit log
+            audit_logger.info(f"Voter registered: {voter.reg_no} by {request.user.username}")
+
+            # Email notification
             if voter.email:
                 send_mail(
                     'Voter Registration Successful',
                     f'Dear {voter.name},\n\nYou have been successfully registered as a voter in the VotingApp system.',
-                    'kimeddy254@gmail.com',  
+                    'kimeddy254@gmail.com',
                     [voter.email],
                     fail_silently=True,
                 )
+
             messages.success(request, "Voter registered successfully.")
             return redirect('Evoting:voter_list')
+
     else:
         form = VoterRegistrationForm()
-    return render(request, "register.html", {"form": form})
 
+    return render(request, "register.html", {"form": form})
 
 @group_required('VoterRegistrars')
 def verify_voter(request, national_id):

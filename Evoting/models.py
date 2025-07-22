@@ -20,6 +20,7 @@ class Voter(models.Model):
     date_of_birth = models.DateField(null=False, blank=False)  
     age = models.PositiveIntegerField(null=False, blank=False)  
     department = models.CharField(max_length=100, null=False, blank=False, default='')
+    photo_url = CloudinaryField('image', blank=True, null=True)
     faculty = models.CharField(
         max_length=50, choices=FACULTY_CHOICES, null=False, blank=False
     )     

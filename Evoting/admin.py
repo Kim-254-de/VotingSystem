@@ -7,6 +7,13 @@ class VoterAdmin(admin.ModelAdmin):
     list_display = ('national_id', 'name', 'date_of_birth', 'age', 'department', 'has_voted', 'is_verified', 'registered_by', 'registered_at', 'verified_by', 'verified_at')
 
 admin.site.register(Voter, VoterAdmin)
+class VoterAdmin(admin.ModelAdmin):
+    def voter_photo(self, obj):
+        if obj.photo_url:
+            return format_html('<img src="{}" width="50"/>', obj.photo_url.url)
+        return "No Photo"
+    voter_photo.short_description = 'Photo'
+
 
 class CandidateAdmin(admin.ModelAdmin):
 
