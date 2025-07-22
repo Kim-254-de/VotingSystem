@@ -54,6 +54,10 @@
 </head>
 <body>
     <div class="card">
+         <div style="text-align: center; margin-bottom: 15px;">
+            <img src="{{ voter.photo_url.url }}" alt="Voter Photo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #4CAF50;">
+        </div>
+
         <h2>Voter Card</h2>
         <p><strong>Name:</strong> {{ voter.name }}</p>
         <p><strong>Voter ID:</strong> {{ voter.national_id }}</p>
