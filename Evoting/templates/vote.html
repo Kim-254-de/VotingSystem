@@ -230,6 +230,14 @@
           font-size: 16px;
           pointer-events: none;
         }
+        .voter-photo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ccc;
+        }
+
 
         
     </style>
@@ -244,24 +252,28 @@
     </div>
     <div class="main-layout">
         <div class="sidebar">
-            <h3>Registered Voters - {{ faculty }}</h3>
-            <div class="search-bar">
-                <input type="text" id="voterSearch" placeholder="Search voter by name or ID...">
-            </div>
-            <ul class="voter-list" id="voterList">
-                {% for voter in voters %}
-                    <li>
-                        <strong>{{ voter.name }}</strong><br>
-                        <span style="font-size:0.93em;color:#555;">ID: {{ voter.national_id }}</span>
-                        {% if voter.has_voted %}
-                            <span class="voted">✔</span>
-                        {% endif %}
-                    </li>
-                {% empty %}
-                    <li>No voters registered.</li>
-                {% endfor %}
-            </ul>
-        </div>
+    <h3>Registered Voters - {{ faculty }}</h3>
+    <div class="search-bar">
+        <input type="text" id="voterSearch" placeholder="Search voter by name or ID...">
+    </div>
+    <ul class="voter-list" id="voterList">
+        {% for voter in voters %}
+            <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <img src="{{ voter.photo.url }}" alt="Photo" class="voter-photo">
+                <div>
+                    <strong>{{ voter.name }}</strong><br>
+                    <span style="font-size:0.93em; color:#555;">ID: {{ voter.national_id }}</span>
+                    {% if voter.has_voted %}
+                        <span class="voted">✔</span>
+                    {% endif %}
+                </div>
+            </li>
+        {% empty %}
+            <li>No voters registered.</li>
+        {% endfor %}
+    </ul>
+</div>
+
         <div class="content">
             <h2><span style="font-size: 0.8em; color: #777;">(Faculty: {{ faculty }})</span></h2>
 
