@@ -1,5 +1,4 @@
 // Load face-api models from static folder or CDN
-// Load face-api.js model
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/static/Evoting/models')
 ]).then(startWebcam).catch(err => {
