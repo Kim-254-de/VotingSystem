@@ -83,5 +83,5 @@ function validateAndSubmit(event) {
 document.addEventListener("DOMContentLoaded", () => {
     captureButton.addEventListener("click", capturePhoto);
     retakeButton.addEventListener("click", retakePhoto);
-    document.querySelector("#registerForm").addEventListener("submit", validateAndSubmit);
+    document.querySelector("#VoterRegistrationForm").addEventListener("submit", validateAndSubmit);
 });
