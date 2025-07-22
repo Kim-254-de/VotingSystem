@@ -34,10 +34,11 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # This is where files get collected
 
+# Optional, only if you have extra static folders outside apps
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 # For WhiteNoise
