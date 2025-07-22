@@ -21,7 +21,7 @@ An online voting system developed with Django. This system is designed to enhanc
 
 - **Backend:** Django (Python)
 - **Frontend:** HTML, CSS,Js
-- **Database:** SQLite 
+- **Database:** MySQL 
 - **Version Control:** Git + GitHub
 
 ## ⚙️ Installation
