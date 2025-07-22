@@ -87,16 +87,14 @@ function validateAndSubmit(event) {
 }
 
 // Initialize on DOM load
-document.addEventListener("DOMContentLoaded", function () {
-    if (captureBtn && retakeBtn && videoEl && canvas && imageInput && previewImage) {
-        captureBtn.addEventListener("click", capturePhoto);
-        retakeBtn.addEventListener("click", retakePhoto);
-    }
+document.addEventListener("DOMContentLoaded", () => {
+    captureBtn.addEventListener("click", capturePhoto);
+    retakeBtn.addEventListener("click", retakePhoto);
 
     const form = document.querySelector("#VoterRegistrationForm");
     if (form) {
         form.addEventListener("submit", validateAndSubmit);
     } else {
-        console.warn("Form with ID #VoterRegistrationForm not found.");
+        console.warn("Form with ID 'VoterRegistrationForm' not found.");
     }
 });
