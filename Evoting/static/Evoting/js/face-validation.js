@@ -16,6 +16,8 @@ const retakeBtn = document.getElementById('retake');
 const imageInput = document.getElementById('photoData');
 const previewImage = document.getElementById('preview');
 const faceStatus = document.getElementById('faceStatus');
+const previewSection = document.getElementById('previewSection');
+
 
 let captured = false;
 let faceDetected = false;
