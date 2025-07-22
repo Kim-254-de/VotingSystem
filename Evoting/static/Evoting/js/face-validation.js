@@ -53,6 +53,9 @@ async function capturePhoto() {
     } else {
         faceDetected = false;
         faceStatus.textContent = "No face detected. Please retake the photo.";
+        retakeBtn.style.display = "inline-block"; // Show the button
+        previewSection.style.display = "block";      // Show the preview area
+        previewImage.src = "{% static 'Evoting/images/default-profile.png' %}"; // Reset preview
         faceStatus.style.color = "red";
     }
 
@@ -83,7 +86,9 @@ function validateAndSubmit(event) {
     } else if (!faceDetected) {
         event.preventDefault();
         alert("No face detected. Please retake the photo.");
+        return false;
     }
+    return true; // Allow form submission if validation passes
 }
 
 // Initialize on DOM load
