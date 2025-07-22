@@ -59,7 +59,7 @@ captureButton.addEventListener('click', async () => {
 
 retakeButton.addEventListener('click', () => {
     // Reset preview and input
-    previewImage.src = "/static/app/images/default-profile.png"; // fallback image
+    previewImage.src = "/static/Evoting/images/default-profile.png"; // fallback image
     imageInput.value = "";
 
     // Show video again
