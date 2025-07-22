@@ -201,7 +201,8 @@
         <button type="button" id="capture" disabled>Capture Photo</button>
     </div>
 
-    <div class="form-group" id="previewSection" style="display:none;">
+    <div class="form-group" id="previewSection" style="display:none;" data-default-image="{% static 'Evoting/images/default-profile.png' %}">
+
         <label>Captured Photo:</label><br>
         <img id="preview" src="{% static 'Evoting/images/default-profile.png' %}" alt="Preview" width="240" height="200">
         <button type="button" id="retake">Retake Photo</button>

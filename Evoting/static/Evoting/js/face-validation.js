@@ -17,6 +17,8 @@ const imageInput = document.getElementById('photoData');
 const previewImage = document.getElementById('preview');
 const faceStatus = document.getElementById('faceStatus');
 const previewSection = document.getElementById('previewSection');
+const defaultImage = "/static/Evoting/images/default-profile.png";
+
 
 
 let captured = false;
