@@ -156,74 +156,70 @@
         </nav>
     </div>
 
-    <div class="container">
-        <h2>Register Voter</h2>
-
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div>{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <form id="VoterRegistrationForm" method="POST" enctype="multipart/form-data"></form>
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_national_id">Registration Number</label>
-                {{ form.national_id }}
-            </div>
-            <div class="form-group">
-                <label for="id_name">Name</label>
-                {{ form.name }}
-            </div>
-            <div class="form-group">
-                <label for="id_date_of_birth">Date of Birth</label>
-                {{ form.date_of_birth }}
-            </div>
-            <div class="form-group">
-                <label for="id_age">Age</label>
-                {{ form.age }}
-            </div>
-            <div class="form-group">
-                <label for="id_department">Department</label>
-                {{ form.department }}
-            </div>
-            <div class="form-group">
-                <label for="id_email">Email</label>
-                {{ form.email }}
-            </div>
-            <div class="form-group">
-                <label for="id_faculty">Faculty</label>
-                {{ form.faculty }}  
-            </div>
-
-            <div class="form-group" id="camera-section">
-                <label>Take Voter Photo (Required):</label><br>
-                <video id="video" width="300" height="200" autoplay muted></video><br>
-                <p id="faceStatus" style="color:red;"></p>
-                <button type="button" id="capture" disabled>Capture Photo</button>
-            </div>
-
-            <div class="form-group" id="preview-section" style="display:none;">
-                <label>Captured Photo:</label><br>
-                <img id="preview" src="{% static 'Evoting/images/default-profile.png' %}" alt="Preview" width="240" height="200">
-
-                <button type="button" id="retake">Retake Photo</button>
-            </div>
-
-            <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
-            <input type="hidden" name="photo_data" id="photoData">
-
-            {% if form.errors %}
-                <div class="messages">
-                    {{ form.errors }}
-                </div>
-            {% endif %}
-            <br>
-            <button type="submit" onclick="return validateBeforeSubmit()">Register</button>
-        </form>
+   <form id="VoterRegistrationForm" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label for="id_national_id">Registration Number</label>
+        {{ form.national_id }}
     </div>
+
+    <div class="form-group">
+        <label for="id_name">Name</label>
+        {{ form.name }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_date_of_birth">Date of Birth</label>
+        {{ form.date_of_birth }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_age">Age</label>
+        {{ form.age }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_department">Department</label>
+        {{ form.department }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_email">Email</label>
+        {{ form.email }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_faculty">Faculty</label>
+        {{ form.faculty }}  
+    </div>
+
+    <div class="form-group" id="camera-section">
+        <label>Take Voter Photo (Required):</label><br>
+        <video id="video" width="300" height="200" autoplay muted></video><br>
+        <p id="faceStatus" style="color:red;"></p>
+        <button type="button" id="capture" disabled>Capture Photo</button>
+    </div>
+
+    <div class="form-group" id="preview-section" style="display:none;">
+        <label>Captured Photo:</label><br>
+        <img id="preview" src="{% static 'Evoting/images/default-profile.png' %}" alt="Preview" width="240" height="200">
+        <button type="button" id="retake">Retake Photo</button>
+    </div>
+
+    <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
+    <input type="hidden" name="photo_data" id="photoData">
+
+    {% if form.errors %}
+        <div class="messages">
+            {{ form.errors }}
+        </div>
+    {% endif %}
+    
+    <br>
+    <button type="submit" onclick="return validateBeforeSubmit()">Register</button>
+</form>
+
     <script>
         
         // auto-fill age from date of birth
