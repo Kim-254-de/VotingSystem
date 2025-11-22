@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import Voter, Candidate, FACULTY_CHOICES
+from .models import Voter, Candidate, FACULTY_CHOICES, Vote
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib import messages
 from .forms import VoterRegistrationForm, VoterVerificationForm
@@ -146,7 +146,7 @@ def vote(request, faculty):
                 voter.save()
                 messages.success(request, "Vote cast successfully.")
 
-                # Optional: send email confirmation
+                # send email confirmation
                 if voter.email:
                     send_mail(
                         'Vote Cast Confirmation',
@@ -307,3 +307,37 @@ def voter_turnout_view(request):
         'turnout_percentage': round(turnout_percentage, 2),
     }
     return render(request, 'turnout.html', context)
+
+
+
+# This is the view that handles voting on the blockchain
+from django.http import JsonResponse, HttpResponseNotAllowed
+
+#from blockchain.vote_handler import cast_vote_to_blockchain
+
+@login_required
+def vote_blockchain_view(request):
+    if request.method == 'POST':
+        voter = request.user
+        candidate_id = request.POST['candidate_id']
+        
+        # Extra logic: check if already voted (from MySQL)
+        if voter.has_voted:
+            return JsonResponse({'error': 'You already voted.'}, status=403)
+        
+        try:
+            # Cast vote to blockchain
+            tx_hash = cast_vote_to_blockchain(voter.blockchain_address, candidate_id)
+            
+            # Log it in your existing DB too (for hybrid setup)
+            Vote.objects.create(voter=voter, candidate_id=candidate_id, tx_hash=tx_hash)
+            
+            voter.has_voted = True
+            voter.save()
+            
+            return JsonResponse({'message': 'Vote cast successfully!', 'tx': tx_hash})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return HttpResponseNotAllowed(['POST'])
